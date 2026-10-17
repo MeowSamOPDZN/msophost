@@ -1,0 +1,12 @@
+rules_version = '2';
+// MSOP Hosting — each user can only read/write their own profile + nodes.
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+      match /nodes/{nodeId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+  }
+}
