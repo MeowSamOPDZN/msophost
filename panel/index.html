@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel — MSOP Hosting</title>
+<link rel="stylesheet" href="/css/panel.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f8cff'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>M</text></svg>">
+<style>
+  .nodebar { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .nodepill {
+    border: 1px solid var(--border); background: var(--panel); color: var(--muted);
+    padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px; font-family: var(--font);
+  }
+  .nodepill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted2); }
+  .nodepill.active { color: #fff; border-color: var(--accent); }
+  .nodepill.active .dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .nodepill.offline .dot { background: var(--red); }
+  .howbox { background: var(--panel); border: 1px solid var(--border-soft); border-radius: 12px; padding: 26px; max-width: 640px; }
+  .howbox h3 { margin-bottom: 6px; }
+  .howbox ol { margin: 14px 0 14px 20px; color: var(--muted); }
+  .howbox ol li { margin-bottom: 10px; }
+  .howbox code { font-family: var(--mono); background: var(--bg2); border: 1px solid var(--border); padding: 10px 12px; border-radius: 8px; display: block; font-size: 12.5px; color: var(--text); margin: 8px 0; word-break: break-all; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="cube">M</span><span>MSOP Hosting<small>HOSTED PANEL</small></span></div>
+  <nav class="nav"><a href="/">Home</a><a href="/panel/" class="active">Panel</a></nav>
+  <div class="spacer"></div>
+  <div class="userchip"><span id="chipName"></span><span class="avatar" id="chipAvatar">?</span></div>
+  <button class="btn-logout" id="logoutBtn">Log out</button>
+</header>
+
+<div class="wrap">
+  <div class="nodebar" id="nodeBar" style="display:none">
+    <span style="color:var(--muted);font-size:13px;font-weight:700">NODES</span>
+    <span id="nodePills" style="display:flex;gap:8px;flex-wrap:wrap"></span>
+    <button class="btn btn-sm" id="connectBtn">+ Connect node</button>
+  </div>
+
+  <div id="noNodes" style="display:none">
+    <div class="page-head"><div><h1>Your Panel</h1><p>Connect your first node to start managing servers.</p></div></div>
+    <div class="howbox">
+      <h3>Connect a node</h3>
+      <p style="color:var(--muted);font-size:13.5px">A node is a VPS running the MSOP Panel backend. Your servers live there — this site is the remote control.</p>
+      <ol>
+        <li>On an Ubuntu VPS, run:<code>curl -fsSL https://raw.githubusercontent.com/MeowSamOPDZN/msop-panel/main/install.sh | sudo bash</code></li>
+        <li>Update it once for remote access:<code>cd /opt/msop-panel &amp;&amp; sudo ./update.sh</code></li>
+        <li>Copy the <b>API token</b> printed at the end of the install <span style="color:var(--muted2)">(or run <b>node server/setup.js --show-token</b> on the VPS)</span>.</li>
+        <li>Press <b>Connect node</b> below and paste the node's address + token.</li>
+      </ol>
+      <button class="btn btn-primary" id="connectBtn2">+ Connect node</button>
+    </div>
+  </div>
+
+  <div id="dashView" style="display:none">
+    <div class="page-head">
+      <div><h1 id="dashTitle">Servers</h1><p id="dashSub"></p></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-ghost" id="nodeSettingsBtn">Node settings</button>
+        <button class="btn btn-primary" id="createBtn">+ Create Server</button>
+      </div>
+    </div>
+    <div class="grid" id="serverGrid"></div>
+    <div class="empty" id="emptyState" style="display:none">
+      <h3>No servers on this node yet</h3>
+      <p>Create your first Minecraft server to get started.</p>
+    </div>
+  </div>
+</div>
+
+<!-- connect node modal -->
+<div class="modal-back" id="nodeModal">
+  <div class="modal">
+    <h2>Connect node</h2>
+    <p class="sub">Your VPS running the MSOP Panel backend.</p>
+    <div class="field"><label>Node name</label><input id="nName" placeholder="My VPS" maxlength="32"></div>
+    <div class="field"><label>Node URL</label><input id="nUrl" placeholder="http://203.0.113.10:3000"><div class="hint">The address + panel port of your VPS.</div></div>
+    <div class="field"><label>API token</label><input id="nToken" placeholder="paste the token from the install" autocomplete="off"><div class="hint">Printed at the end of install.sh, or: <span style="font-family:var(--mono)">node server/setup.js --show-token</span></div></div>
+    <div class="login-err" id="nodeErr" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close>Cancel</button>
+      <button class="btn" id="testNodeBtn">Test</button>
+      <button class="btn btn-primary" id="saveNodeBtn">Connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- create server modal -->
+<div class="modal-back" id="createModal">
+  <div class="modal">
+    <h2>Create Server</h2>
+    <p class="sub">The server jar downloads on your node. Creating a server accepts the Minecraft EULA.</p>
+    <div class="field"><label>Server name</label><input id="fName" placeholder="My Survival World" maxlength="32"></div>
+    <div class="field-row">
+      <div class="field"><label>Software</label><select id="fType"><option value="vanilla">Vanilla</option><option value="paper">Paper (plugins)</option></select></div>
+      <div class="field"><label>Minecraft version</label><select id="fVersion"><option>Loading…</option></select></div>
+    </div>
+    <div class="field"><label>Memory (RAM)</label>
+      <select id="fMem"><option value="1024">1 GB</option><option value="2048" selected>2 GB</option><option value="4096">4 GB</option><option value="8192">8 GB</option><option value="16384">16 GB</option></select>
+      <div class="hint">A port is assigned automatically starting at 25565.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close>Cancel</button>
+      <button class="btn btn-primary" id="doCreate">Create Server</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<script type="module" src="/js/panel.js"></script>
+</body>
+</html>
