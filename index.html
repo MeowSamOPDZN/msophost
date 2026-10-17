@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MSOP Hosting — Minecraft servers, minus the hassle</title>
+<meta name="description" content="MSOP Hosting: sign in, connect your node, and manage your Minecraft servers from anywhere.">
+<link rel="stylesheet" href="/css/landing.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23a3e635'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%230a0c0a' font-family='sans-serif' font-weight='bold'>M</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="nav">
+  <a class="wordmark" href="/">MSOP<span>&nbsp;Hosting</span></a>
+  <nav>
+    <a href="#how">How it works</a>
+    <a href="#plans">Plans</a>
+    <a href="/panel/">Panel</a>
+  </nav>
+  <a class="btn small" href="/login.html" id="navCta">Sign in</a>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="eyebrow">Minecraft server hosting</p>
+    <h1>Hosting Minecraft worlds<br>has never been<br>this easy.</h1>
+    <p class="sub">Sign in, connect your node, and run your servers from anywhere.<br>No control-panel degree required.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="/login.html">Start your server</a>
+      <a class="btn ghost" href="/panel/">Open panel →</a>
+    </div>
+    <ul class="stats">
+      <li><b>99%</b><span>uptime</span></li>
+      <li><b>Lag-free</b><span>gameplay</span></li>
+      <li><b>24/7</b><span>support</span></li>
+    </ul>
+  </section>
+
+  <section class="how" id="how">
+    <p class="eyebrow">How it works</p>
+    <ol>
+      <li><span class="n">01</span><div><b>Sign in.</b><p>One account, on every device. Your nodes follow you.</p></div></li>
+      <li><span class="n">02</span><div><b>Connect your node.</b><p>Run the one-command installer on a VPS. Paste the address and token.</p></div></li>
+      <li><span class="n">03</span><div><b>Play.</b><p>Create servers, watch the console, manage files — from your browser.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="plans" id="plans">
+    <p class="eyebrow">Plans</p>
+    <div class="plan-row">
+      <div><b>Free</b><p>1 node · all panel features · community support</p></div>
+      <span class="price">$0</span>
+      <a class="btn small" href="/login.html">Start free</a>
+    </div>
+    <div class="plan-row">
+      <div><b>Pro</b><p>Unlimited nodes · priority support · early features</p></div>
+      <span class="price">soon</span>
+      <a class="btn small ghost" href="/login.html">Get notified</a>
+    </div>
+    <p class="fine">You bring the VPS. We bring the panel. Vanilla and Paper supported.</p>
+  </section>
+</main>
+
+<footer>
+  <span>MSOP Hosting</span>
+  <span class="made">Made by MeowSamOP DZN</span>
+</footer>
+
+<script type="module">
+import { auth } from "/js/firebase-init.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+onAuthStateChanged(auth, (u) => {
+  if (u) document.getElementById("navCta").textContent = "Open panel →";
+});
+</script>
+</body>
+</html>
