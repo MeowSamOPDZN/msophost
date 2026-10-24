@@ -23,7 +23,7 @@
     <p style="font-size:13px;margin:0 0 12px"><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p><form id="emailForm">
       <div class="field"><label>Email</label><input id="email" type="email" required autocomplete="email"></div>
       <div class="field"><label>Password</label><input id="password" type="password" required autocomplete="current-password"></div>
-      <button class="btn primary" type="submit" id="emailBtn">Sign in</button>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.55;margin:0 0 12px;text-align:left;cursor:pointer"><input type="checkbox" id="termsCheck" style="margin-top:2px"> <span>I agree to the <a href="/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></label><button class="btn primary" type="submit" id="emailBtn">Sign in</button>
     </form>
     <p class="login-switch"><span id="switchText">New here?</span> <button id="switchBtn">Create an account</button></p>
     <p class="login-switch" style="margin-top:8px"><a href="/" style="color:var(--faint)">← Back home</a></p>
@@ -62,7 +62,7 @@ document.getElementById("googleBtn").onclick = async () => {
   catch (e) { showErr(friendly(e)); }
 };
 document.getElementById("emailForm").onsubmit = async (e) => {
-  e.preventDefault();
+  e.preventDefault(); if (mode !== "signin") { const tc = document.getElementById("termsCheck"); if (tc && !tc.checked) { showErr("Please accept the Terms and Privacy Policy first."); return; } }
   const email = document.getElementById("email").value.trim();
   const pw = document.getElementById("password").value;
   try {
